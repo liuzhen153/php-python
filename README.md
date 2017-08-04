@@ -67,19 +67,19 @@
 ### 新`ppython`可以做什么？有什么优势？
 *********************
 
-    **您可以结合使用`PHP`和`Python`两种语言，取其所长、补其所短，利用`PHP`调用`Python`程序！可以很容易的集成在任何`PHP`框架和程序中！**
+**您可以结合使用`PHP`和`Python`两种语言，取其所长、补其所短，利用`PHP`调用`Python`程序！可以很容易的集成在任何`PHP`框架和程序中！**
 
-    新的`ppython`主要改进了以下内容：
+新的`ppython`主要改进了以下内容：
 
-    * 将原生代码封装成可供调用的类库，开发者不需要关注深入的代码逻辑即可方便的使用；
-    * 改正了原项目中很多错误，精简了代码，去除无用代码；
-    * 将方法调用逻辑优化，从只传入`文件名`改为默认需传入`文件夹/文件名`，这样使开发者可以更好的管理`Python`文件；
+* 将原生代码封装成可供调用的类库，开发者不需要关注深入的代码逻辑即可方便的使用；
+* 改正了原项目中很多错误，精简了代码，去除无用代码；
+* 将方法调用逻辑优化，从只传入`文件名`改为默认需传入`文件夹/文件名`，这样使开发者可以更好的管理`Python`文件；
 
 ### 注意事项
 *********************
 
-    * 确保`PHP`已经打开`socket`相关模块
-    * 确保你的服务器上有`Python3`及以上版本
+* 确保`PHP`已经打开`socket`相关模块
+* 确保你的服务器上有`Python3`及以上版本
 
 
 # 二、使用方法（以`ThinkPHP5`为例）
@@ -141,110 +141,110 @@
 ### 在控制器中如何使用
 *********************
 
- 	* 头部要引用该类库
+	* 头部要引用该类库
 
-	~~~
-	use ppython\Ppython;
-	~~~
+~~~
+use ppython\Ppython;
+~~~
 
-	* 示例代码
+* 示例代码
 
-	~~~
-	<?php
-	namespace app\index\controller;
-	use ppython\Ppython;
+~~~
+<?php
+namespace app\index\controller;
+use ppython\Ppython;
 
-	class Index
+class Index
+{
+    // 不带参数
+    public function py()
+    {
+		$python = new Ppython();
+	    $data = $python->py("sayhi.hi::hello");
+	    dump($data);
+    }
+
+    //带参数的方法
+    public function py_with_something($name)
+    {
+		$python = new Ppython();
+        // 更多参数依次往后添加
+	    $data = $python->py("sayhi.hi::hello_name",$name);
+	    dump($data);
+    }
+
+	// python返回的是数组
+	public function py_arr()
 	{
-	    // 不带参数
-	    public function py()
-	    {
-			$python = new Ppython();
-		    $data = $python->py("sayhi.hi::hello");
-		    dump($data);
-	    }
-
-	    //带参数的方法
-	    public function py_with_something($name)
-	    {
-			$python = new Ppython();
-	        // 更多参数依次往后添加
-		    $data = $python->py("sayhi.hi::hello_name",$name);
-		    dump($data);
-	    }
-
-		// python返回的是数组
-		public function py_arr()
-		{
-			$python = new Ppython();
-		    $data = $python->py("sayhi.hi::return_arr");
-		    dump($data);
-		}
-
-		// PHP传递数字类型变量，计算2+3的和
-		public function py_num()
-		{
-			$python = new Ppython();
-		    $data = $python->py("sayhi.hi::dosum",2,3);
-		    dump($data);
-		}
+		$python = new Ppython();
+	    $data = $python->py("sayhi.hi::return_arr");
+	    dump($data);
 	}
-	~~~
+
+	// PHP传递数字类型变量，计算2+3的和
+	public function py_num()
+	{
+		$python = new Ppython();
+	    $data = $python->py("sayhi.hi::dosum",2,3);
+	    dump($data);
+	}
+}
+~~~
 
 ### 访问以查看效果
 *********************
 
-	* 开启服务器，将根目录指向`example`的`public`下。
+* 开启服务器，将根目录指向`example`的`public`下。
 
-	* 访问不带参数的方法
-	~~~
-	http://localhost/index/index/py
-	~~~
+* 访问不带参数的方法
+~~~
+http://localhost/index/index/py
+~~~
 
-	直接会得到结果
+直接会得到结果
 
-	~~~
-	string(10) "Hi , Tommy"
-	~~~
+~~~
+string(10) "Hi , Tommy"
+~~~
 
-	* 访问带参数的方法，可以依次将参数跟在方法后面
+* 访问带参数的方法，可以依次将参数跟在方法后面
 
-	~~~
-	http://localhost/index/index/py_with_something/name/Handsom_Tommy
-	~~~
+~~~
+http://localhost/index/index/py_with_something/name/Handsom_Tommy
+~~~
 
-	经过`Python`处理后得到结果（多参数的情况按照说明使用即可）
+经过`Python`处理后得到结果（多参数的情况按照说明使用即可）
 
-	~~~
-	string(18) "Hi , Handsom Tommy"
-	~~~
+~~~
+string(18) "Hi , Handsom Tommy"
+~~~
 
-	* `Python`返回给`PHP`的结果不受限制，我们来测试下返回一个数组
+* `Python`返回给`PHP`的结果不受限制，我们来测试下返回一个数组
 
-	~~~
-	http://localhost/index/index/py_arr
-	~~~
+~~~
+http://localhost/index/index/py_arr
+~~~
 
-	得到相应数组
+得到相应数组
 
-	~~~
-	array(2) {
-	  ["name"] => string(5) "Tommy"
-	  ["age"] => int(24)
-	}
-	~~~
+~~~
+array(2) {
+  ["name"] => string(5) "Tommy"
+  ["age"] => int(24)
+}
+~~~
 
-	* 由于`PHP`传过来的参数都会被处理成字符串类型，所以需要使用数字类型的地方请自行转换，如若是其他类型数据做类似处理，否则会报错。
+* 由于`PHP`传过来的参数都会被处理成字符串类型，所以需要使用数字类型的地方请自行转换，如若是其他类型数据做类似处理，否则会报错。
 
-	~~~
-	http://localhost/index/index/py_num
-	~~~
+~~~
+http://localhost/index/index/py_num
+~~~
 
-	得到以下结果，`Python`返回给`PHP`的数据类型不受限制
+得到以下结果，`Python`返回给`PHP`的数据类型不受限制
 
-	~~~
-	int(5)
-	~~~
+~~~
+int(5)
+~~~
 
 
 # 三、一些必要的操作和注意事项
