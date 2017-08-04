@@ -193,7 +193,7 @@ http://localhost/index/index/py_with_something/name/Handsom_Tommy
 经过`Python`处理后得到结果（多参数的情况按照说明使用即可）
 
 ~~~
-string(18) "Hi , Handsom Tommy"
+string(18) "Hi , Handsom_Tommy"
 ~~~
 
 * `Python`返回给`PHP`的结果不受限制，我们来测试下返回一个数组
