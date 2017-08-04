@@ -1,26 +1,24 @@
 
 # 一、`ppython` 简述
 
+> 本类库基于年久已不再维护的`ppython`改写，为了表达对它的敬意，我决定沿用原名称。
 
 ### 站在巨人的肩膀上
 *********************
-
-本类库基于年久已不再维护的`ppython`改写，为了表达对它的敬意，我决定沿用原名称。
-
-
-> `ppython`是一个令人兴奋的项目，但是已经在14年停止维护和更新。以下简介来自原`ppython`介绍，原文地址 http://www.oschina.net/p/ppython
+> `ppython`是一个令人兴奋的项目，但是已经在14年停止维护和更新。以下部分文字摘自原`ppython`介绍，原文地址 http://www.oschina.net/p/ppython
 
 
 许多人在纠结`WEB`快速开发究竟是采用PHP，还是采用`Python`，二者同样是脚本语言，但特点鲜明：
 
 **PHP:** `Web`专用开发利器，有10多年的经验积累，但其他领域基本不涉及，扩展性不强，企业应用少。
+
 **Python:** 近期的明星语言，面向对象、简单高效、可扩展性强，但`Web`开发积累少，成熟度低。
 
 `ppython`开源项目既是结合使用`PHP`和`Python`两种语言，取其所长、补其所短，面向企业WEB领域的开发技术。此技术可以理解为`PHP`和`Python`相结合的技术，也可称为`PHP`和`Python`混合编程技术，或者`PHP`调用`Python`服务的技术，也有人习惯称之为前台`PHP`后台`Python`的技术框架。
 
 本项目是`LAJP`项目的语言环境的拓展，变化是将`LAJP`中的`Java`语言变更为`Python`语言，因此`LAJP`的技术、文档对本项目有参考作用。
 
-**特点**
+> 特点
 
 **优势互补:** `PHP`和`Python`都是流行的脚本语言，`PHP`非常适合网页编程；而`Python`可以当作轻量级`JAVA`，二者结合可发挥各自优势。
 
@@ -38,27 +36,6 @@
 
 ![](http://static.oschina.net/uploads/img/201309/19082326_A2Sp.png)
 
-
-> `PHP`和Python是两种不同的语言，通讯中采用两种`socket`机制。
-
-一、`TCP Socket`
-传统的`TCP/IP`通讯。
-
-二、`UNIX Domain Socket`
-`Unix/Linux`本地`socket`，相对于`TCP Socket`，有以下特点：
-
-* 只能在同一台主机中通讯（`IPC`），不能跨网络
-* 传输速度，大于`TCP Socket`
-* 服务端只向本机提供服务(没有对外侦听端口)，相对安全，易于管理。
-
-**数据类型转换**
-
-`PHP`和`Python`各有其语言内部定义的数据类型，当`PHP`数据传送到`Python`，或`Python`数据传送到`PHP`时，传统上需要转码处理，而使用本技术程序员无需进行任何的此类工作。
-![](http://static.oschina.net/uploads/img/201309/19082326_YKl9.png)
-
-
-详细内容请浏览wiki文档：http://code.google.com/p/ppython/w/list （估计访问不了）
-
 **提高`Python`的多线程效率**
 
 `Python`因其语言`GIL`特性，多线程效率不高。在`PHP+Python`的混搭机制中，`Python`端可以多进程方式部署，从而提高`Python`的整体工作效率。
@@ -67,7 +44,7 @@
 ### 新`ppython`可以做什么？有什么优势？
 *********************
 
-**您可以结合使用`PHP`和`Python`两种语言，取其所长、补其所短，利用`PHP`调用`Python`程序！可以很容易的集成在任何`PHP`框架和程序中！**
+**相对于已经年久失修且各种报错的旧版`ppython`，我做了相应的优化和修正，您可以很容易的集成在任意PHP项目中！**
 
 新的`ppython`主要改进了以下内容：
 
