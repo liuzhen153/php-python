@@ -5,8 +5,11 @@
 //
 // License: http://www.apache.org/licenses/LICENSE-2.0
 //-----------------------------------------------------------
-//------------------------作者-------------------------------
+//------------------------作者（汉化+纠错+优化）-------------------------------
+// 
 // Tommy  QQ:447569003@qq.com
+// 
+//------------------------优化建议-------------------------------
 // Behero
 //-----------------------------------------------------------
 namespace ppython;
@@ -22,28 +25,27 @@ class Ppython
 	{
 	    //参数数量
 	    $args_len = func_num_args();
+
 	    //参数数组
 	    $arg_array = func_get_args();
 
 	    //参数数量不能小于1
-	    if ($args_len < 1)
-	    {
+	    if ($args_len < 1){
 	        throw new \Exception("[PPython Error] lapp_call function's arguments length < 1", PARAM_TYPE_ERROR);
 	    }
+
 	    //第一个参数是Python模块函数名称，必须是string类型
-	    if (!is_string($arg_array[0]))
-	    {
+	    if (!is_string($arg_array[0])){
 	        throw new \Exception("[PPython Error] lapp_call function's first argument must be string \"module_name::function_name\".", PARAM_TYPE_ERROR);
 	    }
 
 		//创建socket套接字
-	    if (($socket = socket_create(AF_INET, SOCK_STREAM, 0)) === false)
-	    {
+	    if (($socket = socket_create(AF_INET, SOCK_STREAM, 0)) === false){
 	        throw new \Exception("[PPython Error] socket create error.", SOCKET_ERROR);
 	    }
+
 		// 进行socket连接
-	    if (socket_connect($socket, LAJP_IP, LAJP_PORT) === false)
-	    {
+	    if (socket_connect($socket, LAJP_IP, LAJP_PORT) === false){
 	        throw new \Exception("[PPython Error] socket connect error.", SOCKET_ERROR);
 	    }
 
@@ -54,14 +56,11 @@ class Ppython
 	    $request = $req_len.",".$request;
 
 	    $send_len = 0;
-	    do
-	    {
+	    do{
 	        //将PHP参数通过socket发送给Python处理
-	        if (($sends = socket_write($socket, $request, strlen($request))) === false)
-	        {
+	        if (($sends = socket_write($socket, $request, strlen($request))) === false){
 	            throw new \Exception("[PPython Error] socket write error.", SOCKET_ERROR);
 	        }
-
 	        $send_len += $sends;
 	        $request = substr($request, $sends);
 
@@ -69,20 +68,14 @@ class Ppython
 
 	    //接收
 	    $response = "";
-	    while(true)
-	    {
+
+	    while(true){
 	        $recv = "";
-	        if (($recv = socket_read($socket, 1400)) === false)
-	        {
+	        if (($recv = socket_read($socket, 1400)) === false){
 	            throw new \Exception("[PPython Error] socket read error.", SOCKET_ERROR);
 	        }
-	        if ($recv == "")
-	        {
-	            break;
-	        }
-
+	        if ($recv == "") break;
 	        $response .= $recv;
-
 	    }
 
 	    //关闭
@@ -90,18 +83,14 @@ class Ppython
 
 	    $rsp_stat = substr($response, 0, 1);    //返回类型 "S":成功 "F":异常
 	    $rsp_msg = substr($response, 1);        //返回信息
+
 		// 抛出Python错误
-	    if ($rsp_stat == "F")
-	    {
-	        //异常信息不用反序列化
-	        throw new \Exception("[PPython Error] Receive Python \Exception: ".$rsp_msg, LAJP_Exception);
+	    if ($rsp_stat == "F"){  
+	        throw new \Exception("[PPython Error] Receive Python \Exception: ".$rsp_msg, LAJP_Exception);//异常信息不用反序列化
 	    }
-	    else
-	    {
-	        if ($rsp_msg != "N") //返回非void
-	        {
-	            //反序列化
-	            return unserialize($rsp_msg);
+	    else{
+	        if ($rsp_msg != "N") { //返回非void
+	            return unserialize($rsp_msg);//反序列化
 	        }
 	    }
 	}

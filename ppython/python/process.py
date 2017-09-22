@@ -1,19 +1,21 @@
 # -*- coding: UTF-8 -*-
 
-# -------------------------------------------------
+# ------------------------------------------------------------------------------
 #    改为继承指定文件夹里的模块 -- by Tommy 2017-5-11
-# -------------------------------------------------
+#    新增LOAD_TYPE，可以动态加载包，不需要每次都重启ppython服务 -- by Tommy 2017-9-22
+# -------------------------------------------------------------------------------
 
 
 import sys
 import time
 import threading
 import socket
-
+import importlib
 import php_python
 
 REQUEST_MIN_LEN = 10    #合法的request消息包最小长度
 TIMEOUT = 180           #socket处理时间180秒
+LOAD_TYPE = 0           #0为默认的，只导入一次，若包文件有改动，需重启ppython服务。1为动态加载，每次都会reload这个包，此时不需要重启ppython服务
 
 pc_dict = {}        #预编译字典，key:调用模块、函数、参数字符串，值是编译对象
 global_env = {}     #global环境变量
@@ -177,26 +179,31 @@ class ProcessThread(threading.Thread):
         #从消息包中解析出模块名、函数名、入参list
         modul, func, params = parse_php_req(reqMsg)
 
+        #检查模块、函数是否存在
         if (modul not in pc_dict):   #预编译字典中没有此编译模块
             #检查模块、函数是否存在
             try:
                 tommy = modul.find(".") #将模块名和子模块分开
                 modulname = modul[tommy+2:] #指定子模块
                 callMod = __import__ (modul,fromlist = (modulname,))    #根据module名，反射出module
-				# pc_dict[modul] = callMod        #预编译字典缓存此模块
+                pc_dict[modul] = callMod        #预编译字典缓存此模块
             except Exception as e:
                 print ('模块不存在:%s' % modul)
-                self._socket.sendall(("F" + "module '%s' is not exist!" % modul).encode(php_python.CHARSET)) #异常
+                self._socket.sendall(("F" + "module '%s' is not exist or there is an error in your .py file!" % modul).encode(php_python.CHARSET)) #异常
                 self._socket.close()
                 return
         else:
             callMod = pc_dict[modul]            #从预编译字典中获得模块对象
+        
+        if (LOAD_TYPE == 1):
+            print('reload module')
+            callMod = importlib.reload(callMod)   # 重新载入模块
 
         try:
             callMethod = getattr(callMod, func)
         except Exception as e:
             print ('函数不存在:%s' % func)
-            self._socket.sendall(("F" + "function '%s()' is not exist!" % func).encode(php_python.CHARSET)) #异常
+            self._socket.sendall(("F" + "function '%s()' is not exist or there is an error in your .py file!" % func).encode(php_python.CHARSET)) #异常
             self._socket.close()
             return
 
