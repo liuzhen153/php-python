@@ -10,10 +10,9 @@
 1. 利用`ppython.sh` 来替换`screen`或`tmux`
     ~~~
     # 开启ppython服务
-    sh ppython.sh
+    sh ppython/ppython.sh
     # 停止ppython服务
-    ps -ef|grep 'ppython.sh' |grep -v 'grep'| awk '{print $2}'|xargs kill -9
-    ps -ef|grep 'php_python.py' |grep -v 'grep'| awk '{print $2}'|xargs kill -9
+    sh ppython/ppython.sh stop
     ~~~
 
 2. 所有重要信息都会被记录在日志里，追错/排查不再抓瞎
@@ -42,9 +41,11 @@ XML-RPC Interface：XML-RPC接口
     ~~~
 
 * 修改配置文件
+
     ①在`supervisor/supervisord.conf`搜索 `/Users/liuzhen20/work/2019/php-python/ppython/` ，然后将这几处替换成你的`ppython`所在位置
 
     ②修改`supervisor/supervisord.conf`第22~25行
+
     ~~~
     [inet_http_server]         ; inet (TCP) server disabled by default
     port=127.0.0.1:8886        ; 这里改为你的IP地址和端口
