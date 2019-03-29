@@ -3,6 +3,70 @@
 
 * 继承指定文件夹里的模块 -- 2017-05-11
 * 新增LOAD_TYPE，可以动态加载包，不需要每次都重启ppython服务 -- 2017-09-22
+* 新增日志记录，脚本控制启动/重启/停止，支持supervisor管理ppython进程 -- 2019-03-29
+
+# 令人惊喜的更新
+
+1. 利用`ppython.sh` 来替换`screen`或`tmux`
+    ~~~
+    # 开启ppython服务
+    sh ppython.sh
+    # 停止ppython服务
+    ps -ef|grep 'ppython.sh' |grep -v 'grep'| awk '{print $2}'|xargs kill -9
+    ps -ef|grep 'php_python.py' |grep -v 'grep'| awk '{print $2}'|xargs kill -9
+    ~~~
+
+2. 所有重要信息都会被记录在日志里，追错/排查不再抓瞎
+> 不幸的是，目前的主体日志在记录时，都会被记录两遍，请找到原因的小伙伴及时联系我！感谢~
+
+![supervisor](./ppython.png)
+
+3. 强烈建议使用`supervisor`来管理你的`ppython`服务
+
+**supervisor简介**
+C/S架构的进程控制系统，可使用户在类UNIX系统中监控、管理进程。常用于管理与某个用户或项目相关的进程。
+官网地址：http://www.supervisord.org
+
+**组成部分**
+supervisord：服务守护进程
+supervisorctl：命令行客户端
+Web Server：提供与supervisorctl功能相当的WEB操作界面
+XML-RPC Interface：XML-RPC接口
+
+**使用方法**
+* 安装`supervisor`
+
+    ~~~
+    # 注意，supervisor不支持python3，如果你默认是python3请使用pip2 isntall supervisor来安装
+    pip install supervisor
+    ~~~
+
+* 修改配置文件
+    ①在`supervisor/supervisord.conf`搜索 `/Users/liuzhen20/work/2019/php-python/ppython/` ，然后将这几处替换成你的`ppython`所在位置
+
+    ②修改`supervisor/supervisord.conf`第22~25行
+    ~~~
+    [inet_http_server]         ; inet (TCP) server disabled by default
+    port=127.0.0.1:8886        ; 这里改为你的IP地址和端口
+    username=admin              ; 默认用户名
+    password=admin2019               ; 默认密码
+    ~~~
+
+    ③在`supervisor/ppython.ini`搜索 `/Users/liuzhen20/work/2019/php-python/ppython/` ，然后将这几处替换成你的`ppython`所在位置
+
+* 启动服务
+
+    ~~~
+    sh ppython/supervisord/super_update.sh
+    ~~~
+
+* 访问服务
+
+打开上面配置的IP+端口号 http://127.0.0.1:8886
+
+![supervisor](./super.png)
+
+**Enjoy it!**
 
 # 一、`ppython` 简述
 
@@ -242,23 +306,17 @@ int(5)
 
 	利用`screen`或`tmux`这类工具运行`php_python.py`，这样我们断开`SSH`连接也没关系，它会在后台继续运行。这类工具具体使用方法请自行搜索。
 
+    **GOOD NEWS！**
+
+    现在支持自管理脚本/supervisor进程管理啦！详情请看最上面【令人惊喜的更新】
+
 2. ~~如果在已有文件中添加新的代码，必须先`ctrl + c`来`shutdown`上述`php_python.py`文件，然后重新运行该文件。否则，新添加的代码不起效果。~~
 
 	**但是，如果是新添加了目录或文件，不用进行重启操作。**
 
 	**GOOD NEWS！**
-  
+
     现在支持`LOAD_TYPE`设置啦！你可以在`process.py`里指定`LOAD_TYPE`的值。
 
     * 默认为0，即原有模式：如果在已有文件中添加新的代码，必须先`ctrl + c`来`shutdown`上述`php_python.py`文件，然后重新运行该文件。否则，新添加的代码不起效果。
     * 1为`reload`模式，此时可以动态加载模块，修改代码不必再重启`ppython`服务
-
-
-
-
-
-
-
-
-
-
