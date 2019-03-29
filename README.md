@@ -8,6 +8,8 @@
 # 令人惊喜的更新
 
 1. 利用`ppython.sh` 来替换`screen`或`tmux`
+> 请注意：这种方式和`supervisor`互斥
+
     ~~~
     # 开启ppython服务
     sh ppython/ppython.sh
