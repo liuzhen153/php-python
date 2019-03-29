@@ -35,7 +35,7 @@ if __name__ == '__main__':
     while 1:
         connection,address = sock.accept()  #收到一个请求
 
-        #logger.loginfo ("client's IP:%s, PORT:%d" % address)
+        # logger.loginfo ("client's IP:%s, PORT:%d" % address)
 
         # 处理线程
         try:
