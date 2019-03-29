@@ -12,6 +12,7 @@ import threading
 import socket
 import importlib
 import php_python
+import logger
 
 REQUEST_MIN_LEN = 10    #合法的request消息包最小长度
 TIMEOUT = 180           #socket处理时间180秒
@@ -125,8 +126,8 @@ def parse_php_req(p):
         params = v
 
     modul_func = params[0]      #第一个元素是调用模块和函数名
-    #print("模块和函数名:%s" % modul_func)
-    #print("参数:%s" % params[1:])
+    #logger.loginfo("模块和函数名:%s" % modul_func)
+    #logger.loginfo("参数:%s" % params[1:])
     pos = modul_func.find("::")
     modul = modul_func[:pos]    #模块名
     func = modul_func[pos+2:]   #函数名
@@ -153,22 +154,22 @@ class ProcessThread(threading.Thread):
             self._socket.settimeout(TIMEOUT)                  #设置socket超时时间
             firstbuf = self._socket.recv(16 * 1024)           #接收第一个消息包(bytes)
             if len(firstbuf) < REQUEST_MIN_LEN:               #不够消息最小长度
-                print ("非法包，小于最小长度: %s" % firstbuf)
+                logger.loginfo ("非法包，小于最小长度: %s" % firstbuf)
                 self._socket.close()
                 return
 
             firstComma = index(firstbuf, 0x2c)                #查找第一个","分割符
             totalLen = int(firstbuf[0:firstComma])            #消息包总长度
-            print("消息长度:%d" % totalLen)
+            logger.loginfo("消息长度:%d" % totalLen)
             reqMsg = firstbuf[firstComma+1:]
             while (len(reqMsg) < totalLen):
                 reqMsg = reqMsg + self._socket.recv(16 * 1024)
 
             #调试
-            #print ("请求包：%s" % reqMsg)
+            #logger.loginfo ("请求包：%s" % reqMsg)
 
         except Exception as e:
-            print ('接收消息异常', e)
+            logger.loginfo ('接收消息异常', e)
             self._socket.close()
             return
 
@@ -177,8 +178,10 @@ class ProcessThread(threading.Thread):
         #---------------------------------------------------
 
         #从消息包中解析出模块名、函数名、入参list
+        logger.loginfo('开始解析消息包')
         modul, func, params = parse_php_req(reqMsg)
-
+        msg = '>>> 【模块】' + str(modul) + ' -【函数】' + str(func) + ' -【参数】' + str(params)
+        logger.loginfo(msg)
         #检查模块、函数是否存在
         if (modul not in pc_dict):   #预编译字典中没有此编译模块
             #检查模块、函数是否存在
@@ -188,21 +191,21 @@ class ProcessThread(threading.Thread):
                 callMod = __import__ (modul,fromlist = (modulname,))    #根据module名，反射出module
                 pc_dict[modul] = callMod        #预编译字典缓存此模块
             except Exception as e:
-                print ('模块不存在:%s' % modul)
+                logger.loginfo ('模块不存在:%s' % modul)
                 self._socket.sendall(("F" + "module '%s' is not exist or there is an error in your .py file!" % modul).encode(php_python.CHARSET)) #异常
                 self._socket.close()
                 return
         else:
             callMod = pc_dict[modul]            #从预编译字典中获得模块对象
-        
+
         if (LOAD_TYPE == 1):
-            print('reload module')
+            logger.loginfo('reload module')
             callMod = importlib.reload(callMod)   # 重新载入模块
 
         try:
             callMethod = getattr(callMod, func)
         except Exception as e:
-            print ('函数不存在:%s' % func)
+            logger.loginfo ('函数不存在:%s' % func)
             self._socket.sendall(("F" + "function '%s()' is not exist or there is an error in your .py file!" % func).encode(php_python.CHARSET)) #异常
             self._socket.close()
             return
@@ -213,21 +216,21 @@ class ProcessThread(threading.Thread):
 
         try:
             params = ','.join([repr(x) for x in params])
-            #print ("调用函数及参数：%s(%s)" % (modul+'.'+func, params) )
+            #logger.loginfo ("调用函数及参数：%s(%s)" % (modul+'.'+func, params) )
 
             #加载函数
             compStr = "import %s\nret=%s(%s)" % (modul, modul+'.'+func, params)
-            #print("函数调用代码:%s" % compStr)
+            #logger.loginfo("函数调用代码:%s" % compStr)
             rpFunc = compile(compStr, "", "exec")
 
             if func not in global_env:
                 global_env[func] = rpFunc
             local_env = {}
             exec (rpFunc, global_env, local_env)     #函数调用
-            #print (global_env)
-            #print (local_env)
+            #logger.loginfo (global_env)
+            #logger.loginfo (local_env)
         except Exception as e:
-            print ('调用Python业务函数异常', e )
+            logger.loginfo ('调用Python业务函数异常', e )
             errType, errMsg, traceback = sys.exc_info()
             self._socket.sendall(("F%s" % errMsg).encode(php_python.CHARSET)) #异常信息返回
             self._socket.close()
@@ -237,17 +240,16 @@ class ProcessThread(threading.Thread):
         #    4.结果返回给PHP
         #---------------------------------------------------
         #retType = type(local_env['ret'])
-        #print ("函数返回：%s" % retType)
+        #logger.loginfo ("函数返回：%s" % retType)
         rspStr = z_encode(local_env['ret'])  #函数结果组装为PHP序列化字符串
 
         try:
+            logger.loginfo ("返回消息包：%s" % rspStr)
             #加上成功前缀'S'
             rspStr = "S" + rspStr
-            #调试
-            #print ("返回包：%s" % rspStr)
             self._socket.sendall(rspStr.encode(php_python.CHARSET))
         except Exception as e:
-            print ('发送消息异常', e)
+            logger.loginfo ('发送消息异常', e)
             errType, errMsg, traceback = sys.exc_info()
             self._socket.sendall(("F%s" % errMsg).encode(php_python.CHARSET)) #异常信息返回
         finally:
