@@ -10,14 +10,15 @@
 1. 利用`ppython.sh` 来替换`screen`或`tmux`
 > 请注意：这种方式和`supervisor`互斥
 
-    ~~~
+
     # 开启ppython服务
     sh ppython/ppython.sh
     # 停止ppython服务
     sh ppython/ppython.sh stop
-    ~~~
+
 
 2. 所有重要信息都会被记录在日志里，追错/排查不再抓瞎
+
 > 不幸的是，目前的主体日志在记录时，都会被记录两遍，请找到原因的小伙伴及时联系我！感谢~
 
 ![supervisor](./ppython.png)
@@ -25,16 +26,19 @@
 3. 强烈建议使用`supervisor`来管理你的`ppython`服务
 
 **supervisor简介**
+
 C/S架构的进程控制系统，可使用户在类UNIX系统中监控、管理进程。常用于管理与某个用户或项目相关的进程。
 官网地址：http://www.supervisord.org
 
 **组成部分**
+
 supervisord：服务守护进程
 supervisorctl：命令行客户端
 Web Server：提供与supervisorctl功能相当的WEB操作界面
 XML-RPC Interface：XML-RPC接口
 
 **使用方法**
+
 * 安装`supervisor`
 
     ~~~
