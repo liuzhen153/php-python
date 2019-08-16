@@ -31,7 +31,7 @@
 2. 所有重要信息都会被记录在日志里 `ppython/log/python/all.log` ，默认按天进行分割，保留最近10天日志，追错/排查不再抓瞎
 
 
-![supervisor](./ppython.png)
+![supervisor](./ppythonlog.png)
 
 3. 强烈建议使用`supervisor`来管理你的`ppython`服务
 
