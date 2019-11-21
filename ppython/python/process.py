@@ -173,7 +173,7 @@ class ProcessThread(threading.Thread):
             #logger.loginfo ("请求包：%s" % reqMsg)
 
         except Exception as e:
-            logger.loginfo('接收消息异常', e)
+            logger.loginfo('接收消息异常' + str(e))
             self._socket.close()
             return
 
