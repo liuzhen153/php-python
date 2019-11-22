@@ -10,6 +10,7 @@ def loginfo(msg):
     :param kwargs:dict | 可自主拓展
     '''
     # 获取上级目录下的log
+    print(msg) # 控制台直接输出日志内容
     log_dir = os.path.dirname(os.path.dirname(
         __file__)) + '/log/'
     logger = logging.getLogger('ppython')

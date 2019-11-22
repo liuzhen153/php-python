@@ -38,7 +38,7 @@ if __name__ == '__main__':
             continue
         break
     if s is None:
-        logger.loginfo('could not open socket:' + err_msg)
+        logger.loginfo('could not open socket:' + str(err_msg))
         sys.exit(1)
 
     logger.loginfo("-------------------------------------------")

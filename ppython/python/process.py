@@ -239,7 +239,7 @@ class ProcessThread(threading.Thread):
             #logger.loginfo (global_env)
             #logger.loginfo (local_env)
         except Exception as e:
-            logger.loginfo('调用Python业务函数异常', e)
+            logger.loginfo('调用Python业务函数异常' + str(e))
             errType, errMsg, traceback = sys.exc_info()
             self._socket.sendall(("F%s" % errMsg).encode(
                 php_python.CHARSET))  # 异常信息返回
@@ -259,7 +259,7 @@ class ProcessThread(threading.Thread):
             rspStr = "S" + rspStr
             self._socket.sendall(rspStr.encode(php_python.CHARSET))
         except Exception as e:
-            logger.loginfo('发送消息异常', e)
+            logger.loginfo('发送消息异常' + str(e))
             errType, errMsg, traceback = sys.exc_info()
             self._socket.sendall(("F%s" % errMsg).encode(
                 php_python.CHARSET))  # 异常信息返回
