@@ -7,15 +7,6 @@
 * 优化日志记录方式，新增ipv 6 支持，且不再将python部分放入项目代码库，应单独管理 -- 2019-04-03
 * 更新使用说明，明确表示ppython没问题，不会导致请求发送两次。
 
-# 终于将内奸揪了出来
-
-
-~~1. 如果在调用ppython时，最后PHP有打印形式的输出，则对应的python脚本会被执行两遍，这也是为什么日志打印两遍的原因，目前未找到解决方法。~~
-
-**导致请求两次的内奸终于找到了：** 原来是`chrome`上的`jsonView jsonViewer json formatter 格式化`插件导致`get`请求会发送两次ಥ_ಥ。停用该插件即可！
-
-![supervisor](./jsonview.png)
-
 # 令人惊喜的更新
 
 1. 利用`ppython.sh` 来替换`screen`或`tmux`
